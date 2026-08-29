@@ -4,6 +4,14 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+def _env_list(name, default=''):
+    raw_value = os.environ.get(name, default)
+    if not raw_value:
+        return []
+    return [item.strip() for item in raw_value.split(',') if item.strip()]
+
+
 BFAR_CA_BUNDLE = BASE_DIR / "bfar_ca_bundle.pem"
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -12,9 +20,10 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-n!6wj8*m1qsd*ox%ulw#$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',') if os.environ.get('ALLOWED_HOSTS') else ['*']
+ALLOWED_HOSTS = _env_list('ALLOWED_HOSTS', '*') or ['*']
 CORS_ALLOW_ALL_ORIGINS = os.environ.get('CORS_ALLOW_ALL_ORIGINS', 'True').lower() == 'true'
-CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ALLOWED_ORIGINS', 'http://127.0.0.1:8000').split(',')
+CORS_ALLOWED_ORIGINS = _env_list('CORS_ALLOWED_ORIGINS', 'http://127.0.0.1:8000')
+CSRF_TRUSTED_ORIGINS = _env_list('CSRF_TRUSTED_ORIGINS', '')
 
 
 # Application definition
