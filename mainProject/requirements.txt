@@ -30,7 +30,7 @@ opt_einsum==3.4.0
 optree==0.19.1
 packaging==26.3
 pillow==12.3.0
-protobuf==7.35.1
+protobuf==4.25.3
 pycparser==3.0
 Pygments==2.20.0
 PyMuPDF==1.24.8
