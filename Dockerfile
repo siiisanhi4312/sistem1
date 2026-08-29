@@ -11,4 +11,4 @@ RUN python -m pip install --upgrade pip \
 
 COPY mainProject /app/mainProject
 
-CMD ["sh", "-c", "cd /app/mainProject && python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn mainProject.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers 1"]
+CMD ["sh", "-c", "cd /app/mainProject && python manage.py migrate --noinput && python manage.py collectstatic --noinput && python -m gunicorn mainProject.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers 1"]
