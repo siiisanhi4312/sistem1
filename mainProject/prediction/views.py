@@ -25,6 +25,10 @@ IMAGE_SHAPE = (224, 224)
 IMAGES_DIR = Path(__file__).resolve().parent / 'images'
 IMAGES_DIR.mkdir(exist_ok=True)
 
+
+def health_check(request):
+    return JsonResponse({'status': 'ok'})
+
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 def shellfish_advisory(request):

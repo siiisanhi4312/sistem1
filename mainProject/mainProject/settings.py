@@ -17,10 +17,14 @@ DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() == 'true'
 ALLOWED_HOSTS = [
     host.strip()
     for host in os.environ.get(
-        'DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1'
+        'DJANGO_ALLOWED_HOSTS',
+        'localhost,127.0.0.1,.up.railway.app'
     ).split(',')
     if host.strip()
 ]
+railway_public_domain = os.environ.get('RAILWAY_PUBLIC_DOMAIN', '').strip()
+if railway_public_domain and railway_public_domain not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(railway_public_domain)
 CORS_ALLOWED_ORIGINS = [
     origin.strip()
     for origin in os.environ.get('CORS_ALLOWED_ORIGINS', '').split(',')
