@@ -62,7 +62,7 @@ class PredictViewTests(TestCase):
         self.assertIn('label', payload)
         self.assertIn('probabilities', payload)
         self.assertIsInstance(payload['probabilities'], dict)
-        self.assertEqual(len(payload['probabilities']), 4)
+        self.assertEqual(len(payload['probabilities']), 8)
         self.assertGreaterEqual(float(payload['confidence']), 0.0)
         self.assertLessEqual(float(payload['confidence']), 1.0)
         self.assertNotEqual(payload['prediction'], 'conus-textile')

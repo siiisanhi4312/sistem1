@@ -17,7 +17,7 @@ from .services.bfar import sync_latest_advisory
 logger = logging.getLogger(__name__)
 
 MODEL_DIR = Path(__file__).resolve().parent / 'model'
-MODEL_PATH = MODEL_DIR / 'shell_model5.tflite'
+MODEL_PATH = MODEL_DIR / 'shell_model8.tflite'
 LABELS_PATH = MODEL_DIR / 'labels.json'
 IMAGE_SHAPE = (224, 224)
 

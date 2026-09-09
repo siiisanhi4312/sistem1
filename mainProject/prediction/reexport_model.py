@@ -24,7 +24,7 @@ from pathlib import Path
 # ============================================================
 
 TRAINED_MODEL_PATH = Path("model/best_seaweed_model.keras")
-OUTPUT_TFLITE_PATH = Path("model/shell_model5.tflite")
+OUTPUT_TFLITE_PATH = Path("model/shell_model8.tflite")
 LABELS_PATH = Path("model/labels.json")
 
 
