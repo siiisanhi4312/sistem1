@@ -69,6 +69,12 @@ class PredictViewTests(TestCase):
 
 
 class ShellfishAdvisoryTests(TestCase):
+    def test_parse_date_handles_abbreviated_month_names(self):
+        from prediction.services.bfar import _parse_date
+
+        self.assertEqual(_parse_date('16 Sept 2026'), date(2026, 9, 16))
+        self.assertEqual(_parse_date('16-Sept-2026'), date(2026, 9, 16))
+
     @patch('prediction.services.bfar.firebase_bulletins.upsert')
     @patch('prediction.services.bfar.fetch_pdf')
     @patch('prediction.services.bfar._archive_candidates')

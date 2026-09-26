@@ -14,20 +14,34 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'dev-only-insecure-key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() == 'true'
 
+DEFAULT_ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '0.0.0.0',
+    '10.0.2.2',
+    '192.168.216.50',
+]
 ALLOWED_HOSTS = [
     host.strip()
     for host in os.environ.get(
-        'DJANGO_ALLOWED_HOSTS',
-        'localhost,127.0.0.1,.up.railway.app'
+        'DJANGO_ALLOWED_HOSTS', ','.join(DEFAULT_ALLOWED_HOSTS)
     ).split(',')
     if host.strip()
 ]
-railway_public_domain = os.environ.get('RAILWAY_PUBLIC_DOMAIN', '').strip()
-if railway_public_domain and railway_public_domain not in ALLOWED_HOSTS:
-    ALLOWED_HOSTS.append(railway_public_domain)
+if DEBUG:
+    ALLOWED_HOSTS = list(dict.fromkeys(ALLOWED_HOSTS + ['*']))
+
+DEFAULT_CORS_ORIGINS = [
+    'http://localhost',
+    'http://127.0.0.1',
+    'http://10.0.2.2',
+    'http://192.168.216.50',
+]
 CORS_ALLOWED_ORIGINS = [
     origin.strip()
-    for origin in os.environ.get('CORS_ALLOWED_ORIGINS', '').split(',')
+    for origin in os.environ.get(
+        'CORS_ALLOWED_ORIGINS', ','.join(DEFAULT_CORS_ORIGINS)
+    ).split(',')
     if origin.strip()
 ]
 CSRF_TRUSTED_ORIGINS = [

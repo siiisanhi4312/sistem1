@@ -93,13 +93,13 @@ class _BfarTableParser(HTMLParser):
 def _parse_date(value):
     value = re.sub(r'\s+', ' ', value or '').strip()
     named = re.search(
-            r'(?<!\d)(\d{1,2})[\s_-]+(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)[\s_-]+(20\d{2})(?!\d)',
+            r'(?<!\d)(\d{1,2})[\s_-]+(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t|tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)[\s_-]+(20\d{2})(?!\d)',
         value,
         re.IGNORECASE,
     )
     if not named:
         named = re.search(
-            r'(?<![A-Za-z])(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)[\s_-]+(\d{1,2}),?[\s_-]+(20\d{2})(?!\d)',
+            r'(?<![A-Za-z])(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t|tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)[\s_-]+(\d{1,2}),?[\s_-]+(20\d{2})(?!\d)',
             value,
             re.IGNORECASE,
         )
@@ -117,8 +117,10 @@ def _parse_date(value):
             1,
         )}
         months.update({name[:3].lower(): index for name, index in months.items()})
+        months.update({'sept': 9, 'sep': 9})
         try:
-            return datetime(int(year), months[month.lower()], int(day)).date()
+            month_key = month.lower().rstrip('.')
+            return datetime(int(year), months[month_key], int(day)).date()
         except (KeyError, ValueError):
             return None
 
@@ -199,8 +201,13 @@ def _find_latest(html, source_url):
         candidates,
         key=lambda item: item['date'] or datetime.min.date()
     )
-    
-    logger.info(f"Found latest advisory: {latest['title']} dated {latest['date']}")
+
+    logger.info(
+        "Found latest BFAR advisory candidate: title=%s date=%s source=%s",
+        latest['title'],
+        latest['date'],
+        latest['source_url'],
+    )
     return latest
 
 
@@ -629,6 +636,13 @@ def sync_latest_advisory(force=False):
                         'verification_method': candidate['verification_method'],
                         'pdf_checked_at': timezone.now(),
                     },
+                )
+                logger.info(
+                    "Saved latest advisory record: bulletin=%s date=%s source=%s created=%s",
+                    bulletin_number,
+                    advisory_date,
+                    candidate.get('source_url'),
+                    created,
                 )
                 firebase_bulletins.upsert(candidate)
                 created_count += int(created)

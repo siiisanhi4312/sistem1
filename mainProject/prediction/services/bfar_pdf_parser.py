@@ -122,21 +122,22 @@ class BfarPdfParser:
         # Try common date patterns
         date_patterns = [
             # Day-first format: "01 June2026" or "05 August 2026"
-            r'(?P<day>\d{1,2})\s*(?P<month>January|February|March|April|May|June|July|August|September|October|November|December)\s*(?P<year>20\d{2})',
+            r'(?P<day>\d{1,2})\s*(?P<month>January|February|March|April|May|June|July|August|September|Sept|Sep|October|November|December)\s*(?P<year>20\d{2})',
             # Full date format: "August 5, 2026" or "August 5 2026"
-            r'(?P<month>January|February|March|April|May|June|July|August|September|October|November|December)\s*(?P<day>\d{1,2}),?\s*(?P<year>20\d{2})',
+            r'(?P<month>January|February|March|April|May|June|July|August|September|Sept|Sep|October|November|December)\s*(?P<day>\d{1,2}),?\s*(?P<year>20\d{2})',
             # ISO format: YYYY-MM-DD
             r'(20\d{2})[-/.](\d{1,2})[-/.](\d{1,2})',
             # US format: MM/DD/YYYY or MM-DD-YYYY
             r'(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})',
             # From filename: dated-August-5-2026
-            r'dated[-\s]+(?P<month>January|February|March|April|May|June|July|August|September|October|November|December)[-\s]+(?P<day>\d{1,2})[-\s]+(?P<year>20\d{2})',
+            r'dated[-\s]+(?P<month>January|February|March|April|May|June|July|August|September|Sept|Sep|October|November|December)[-\s]+(?P<day>\d{1,2})[-\s]+(?P<year>20\d{2})',
         ]
         
         month_map = {
             'january': 1, 'february': 2, 'march': 3, 'april': 4,
             'may': 5, 'june': 6, 'july': 7, 'august': 8,
-            'september': 9, 'october': 10, 'november': 11, 'december': 12,
+            'september': 9, 'sept': 9, 'sep': 9,
+            'october': 10, 'november': 11, 'december': 12,
         }
         
         # Try text first
@@ -145,7 +146,8 @@ class BfarPdfParser:
             if match:
                 try:
                     if match.groupdict().get('month'):
-                        month = month_map[match.group('month').lower()]
+                        month_name = match.group('month').lower().rstrip('.')
+                        month = month_map[month_name]
                         day = int(match.group('day'))
                         year = int(match.group('year'))
                         return datetime(year, month, day).date()
