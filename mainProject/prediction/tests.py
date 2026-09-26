@@ -94,6 +94,12 @@ class HostConfigurationTests(TestCase):
             importlib.reload(settings_module)
 
 
+class RootRouteTests(TestCase):
+    def test_root_and_favicon_routes_do_not_404(self):
+        self.assertEqual(self.client.get('/').status_code, 200)
+        self.assertEqual(self.client.get('/favicon.ico').status_code, 200)
+
+
 class ShellfishAdvisoryTests(TestCase):
     def test_parse_date_handles_abbreviated_month_names(self):
         from prediction.services.bfar import _parse_date
