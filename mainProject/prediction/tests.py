@@ -1,4 +1,6 @@
+import importlib
 import io
+import os
 from datetime import date
 from unittest.mock import patch
 
@@ -66,6 +68,30 @@ class PredictViewTests(TestCase):
         self.assertGreaterEqual(float(payload['confidence']), 0.0)
         self.assertLessEqual(float(payload['confidence']), 1.0)
         self.assertNotEqual(payload['prediction'], 'conus-textile')
+
+
+class HostConfigurationTests(TestCase):
+    def test_production_hosts_allow_railway_domains_by_default(self):
+        import mainProject.settings as settings_module
+
+        original_allowed_hosts = os.environ.get('DJANGO_ALLOWED_HOSTS')
+        original_debug = os.environ.get('DJANGO_DEBUG')
+        try:
+            os.environ.pop('DJANGO_ALLOWED_HOSTS', None)
+            os.environ['DJANGO_DEBUG'] = 'False'
+            importlib.reload(settings_module)
+            hosts = set(settings_module.ALLOWED_HOSTS)
+            self.assertTrue('*' in hosts or '*.up.railway.app' in hosts or '*.railway.app' in hosts)
+        finally:
+            if original_allowed_hosts is None:
+                os.environ.pop('DJANGO_ALLOWED_HOSTS', None)
+            else:
+                os.environ['DJANGO_ALLOWED_HOSTS'] = original_allowed_hosts
+            if original_debug is None:
+                os.environ.pop('DJANGO_DEBUG', None)
+            else:
+                os.environ['DJANGO_DEBUG'] = original_debug
+            importlib.reload(settings_module)
 
 
 class ShellfishAdvisoryTests(TestCase):
